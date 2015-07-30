@@ -4,107 +4,58 @@ import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
 
+public class MainActivity extends AppCompatActivity {//ActionBarActivity
+
+    public static final String PERSON = "PERSON";
+    private static final int NEW_EDIT_PERSON = 1;
     private DrawerLayout drawerLayout;
+    private ArrayList<Person> personList;
+    private PersonListAdapter personListAdapter;
+    private ListView personListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initializing Toolbar and setting it as the actionbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        bindViews();
 
-        ContentFragment fragment = new ContentFragment();
-        android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment);
-        fragmentTransaction.commit();
+        personList = new ArrayList<Person>();
+        Person p1 = new Person();
+        p1.setName("Jose Hardcodeado");
+        personList.add(p1);
+        personListAdapter = new PersonListAdapter(this, personList);
+        
+        personListView.setAdapter(personListAdapter);
+    }
 
-        //Initializing NavigationView
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
-
-        //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-
-            // This method will trigger on item Click of navigation menu
+    private void bindViews() {
+        personListView = (ListView) findViewById(R.id.person_list_view);
+        personListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
-
-
-                //Checking if the item is in checked state or not, if not make it in checked state
-                if (menuItem.isChecked()) menuItem.setChecked(false);
-                else menuItem.setChecked(true);
-
-                //Closing drawer on item click
-                drawerLayout.closeDrawers();
-
-                //Check to see which item was being clicked and perform appropriate action
-                switch (menuItem.getItemId()) {
-
-                    //Replacing the main content with ContentFragment Which is our Inbox View;
-                    case R.id.inbox:
-                        Toast.makeText(getApplicationContext(), "Inbox Selected", Toast.LENGTH_SHORT).show();
-                        return true;
-                    case R.id.starred:
-                        Toast.makeText(getApplicationContext(), "Stared Selected", Toast.LENGTH_SHORT).show();
-                        return true;
-                    case R.id.sent_mail:
-                        Toast.makeText(getApplicationContext(), "Send Selected", Toast.LENGTH_SHORT).show();
-                        return true;
-                    case R.id.drafts:
-                        Toast.makeText(getApplicationContext(), "Drafts Selected", Toast.LENGTH_SHORT).show();
-                        return true;
-                    case R.id.allmail:
-                        Toast.makeText(getApplicationContext(), "All Mail Selected", Toast.LENGTH_SHORT).show();
-                        return true;
-                    case R.id.trash:
-                        Toast.makeText(getApplicationContext(), "Trash Selected", Toast.LENGTH_SHORT).show();
-                        return true;
-                    case R.id.spam:
-                        Toast.makeText(getApplicationContext(), "Spam Selected", Toast.LENGTH_SHORT).show();
-                        return true;
-                    default:
-                        Toast.makeText(getApplicationContext(), "Somethings Wrong", Toast.LENGTH_SHORT).show();
-                        return true;
-
-                }
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("MainActivity", "click on list");
+                Intent intent = new Intent(MainActivity.this, NewEditPerson.class);
+               // intent.putExtra(PERSON, personList.get(position));
+               // intent.putExtra(PERSON_POSITION, position);
+                startActivityForResult(intent, NEW_EDIT_PERSON);
             }
         });
-
-        // Initializing Drawer Layout and ActionBarToggle
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer) {
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                // Code here will be triggered once the drawer closes as we don't want anything to happen so we leave this blank
-                super.onDrawerClosed(drawerView);
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                // Code here will be triggered once the drawer open as we don't want anything to happen so we leave this blank
-
-                super.onDrawerOpened(drawerView);
-            }
-        };
-
-        //Setting the actionbarToggle to drawer layout
-        drawerLayout.setDrawerListener(actionBarDrawerToggle);
-
-        //calling sync state is necessary or else your hamburger icon wont show up
-        actionBarDrawerToggle.syncState();
 
     }
 
@@ -122,19 +73,27 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.search) {
+        Log.d("MainActivity", "select on list");
+        if (id == R.id.add_person) {
+            Intent intent = new Intent(this, NewEditPerson.class);
+            startActivityForResult(intent, NEW_EDIT_PERSON);
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Called when the user clicks the Add contact button
-     */
-    public void addContact(View view) {
-        Intent intent = new Intent(this, NewEditPerson.class);
-        startActivity(intent);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        Log.d("MainActivity","onActivityResult "+requestCode+" "+resultCode);
+        if (resultCode == RESULT_OK && requestCode == NEW_EDIT_PERSON) {
+            Person person = intent.getParcelableExtra(PERSON);
+            //int position = data.getIntExtra(PERSON_POSITION, -1);
+            personList.add(person);
+
+            Toast.makeText(getApplicationContext(), "Person saved", Toast.LENGTH_SHORT).show();
+            //personsAdapter.notifyDataSetChanged();
+
+        }
+        super.onActivityResult(requestCode, resultCode, intent);
     }
 }
