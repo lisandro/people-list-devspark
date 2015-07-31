@@ -21,11 +21,17 @@ public class NewEditPerson extends AppCompatActivity {
     private EditText personEmailField;
     private EditText personAddressField;
     private EditText personDoBField;
+    private Person person;
+    private int personPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.person_form);
+
+        Intent i = getIntent();
+        person = i.getParcelableExtra(MainActivity.PERSON);
+        personPosition = i.getIntExtra(MainActivity.PERSON_POSITION, -1);
 
         bindViews();
     }
@@ -50,7 +56,15 @@ public class NewEditPerson extends AppCompatActivity {
         personAddressField = (EditText) findViewById(R.id.person_address);
         personDoBField =  (EditText) findViewById(R.id.person_dob);
         savePersonButton = (Button)findViewById(R.id.save_button);
-        
+
+        if (person != null) {
+            personNameField.setText(person.getName());
+            personPhoneField.setText(person.getPhone());
+            personEmailField.setText(person.getEmail());
+            personAddressField.setText(person.getAddress());
+            personDoBField.setText(person.getDob());
+        }
+
         savePersonButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,6 +72,7 @@ public class NewEditPerson extends AppCompatActivity {
                 Log.d("NewEditPerson","onCLick");
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra(MainActivity.PERSON, buildPersonFromFields());
+                returnIntent.putExtra(MainActivity.PERSON_POSITION, personPosition);
                 setResult(RESULT_OK, returnIntent);
                 finish();
             }

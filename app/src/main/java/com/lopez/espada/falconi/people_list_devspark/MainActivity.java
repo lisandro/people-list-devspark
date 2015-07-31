@@ -22,8 +22,10 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {//ActionBarActivity
 
     public static final String PERSON = "PERSON";
+    public static final String PERSON_POSITION = "POSITION";
+
     private static final int NEW_EDIT_PERSON = 1;
-    private DrawerLayout drawerLayout;
+
     private ArrayList<Person> personList;
     private PersonListAdapter personListAdapter;
     private ListView personListView;
@@ -51,8 +53,8 @@ public class MainActivity extends AppCompatActivity {//ActionBarActivity
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d("MainActivity", "click on list");
                 Intent intent = new Intent(MainActivity.this, NewEditPerson.class);
-               // intent.putExtra(PERSON, personList.get(position));
-               // intent.putExtra(PERSON_POSITION, position);
+                intent.putExtra(PERSON, personList.get(position));
+                intent.putExtra(PERSON_POSITION, position);
                 startActivityForResult(intent, NEW_EDIT_PERSON);
             }
         });
@@ -84,14 +86,18 @@ public class MainActivity extends AppCompatActivity {//ActionBarActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.d("MainActivity","onActivityResult "+requestCode+" "+resultCode);
+        Log.d("MainActivity", "onActivityResult " + requestCode + " " + resultCode);
         if (resultCode == RESULT_OK && requestCode == NEW_EDIT_PERSON) {
             Person person = intent.getParcelableExtra(PERSON);
-            //int position = data.getIntExtra(PERSON_POSITION, -1);
-            personList.add(person);
+            int position = intent.getIntExtra(PERSON_POSITION, -1);
+            if (position != -1) {
+                personList.set(position,person);
+            } else {
+                personList.add(person);
+            }
 
             Toast.makeText(getApplicationContext(), "Person saved", Toast.LENGTH_SHORT).show();
-            //personsAdapter.notifyDataSetChanged();
+            personListAdapter.notifyDataSetChanged();
 
         }
         super.onActivityResult(requestCode, resultCode, intent);
