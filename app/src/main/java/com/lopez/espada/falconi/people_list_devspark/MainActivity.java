@@ -30,20 +30,33 @@ public class MainActivity extends AppCompatActivity {//ActionBarActivity
     private PersonListAdapter personListAdapter;
     private ListView personListView;
 
+    private SQLPersonDAO dao; // I don't think this should be on the main thread D=
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        dao = new SQLPersonDAO(this);
+        dao.open();
+
         bindViews();
 
         personList = new ArrayList<Person>();
-        Person p1 = new Person();
+       /* Person p1 = new Person();
         p1.setName("Jose Hardcodeado");
-        personList.add(p1);
+        personList.add(p1);*/
+        for(Person p : dao.getAllPersons()) {
+            personList.add(p);
+        }
         personListAdapter = new PersonListAdapter(this, personList);
-        
         personListView.setAdapter(personListAdapter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        dao.close();
+        super.onDestroy();
     }
 
     private void bindViews() {
@@ -95,10 +108,8 @@ public class MainActivity extends AppCompatActivity {//ActionBarActivity
             } else {
                 personList.add(person);
             }
-
-            Toast.makeText(getApplicationContext(), "Person saved", Toast.LENGTH_SHORT).show();
+            dao.savePerson(person);
             personListAdapter.notifyDataSetChanged();
-
         }
         super.onActivityResult(requestCode, resultCode, intent);
     }

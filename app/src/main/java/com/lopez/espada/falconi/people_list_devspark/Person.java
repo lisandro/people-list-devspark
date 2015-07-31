@@ -7,6 +7,8 @@ import android.os.Parcelable;
  * Created by gabriel on 30/07/15.
  */
 public class Person implements Parcelable {
+
+    private int id;
     private String name;
     private String phone;
     private String email;
@@ -46,6 +48,13 @@ public class Person implements Parcelable {
         }
     };
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

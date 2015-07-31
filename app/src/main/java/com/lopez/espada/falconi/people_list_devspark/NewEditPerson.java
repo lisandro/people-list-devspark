@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * Created by Lisandro Falconi on 28/07/15.
@@ -68,8 +69,15 @@ public class NewEditPerson extends AppCompatActivity {
         savePersonButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO validate fields (?)
-                Log.d("NewEditPerson","onCLick");
+                //TODO extract PersonValidator
+                if (personNameField.getText() == null ||
+                        personNameField.getText().toString().equals("")) {
+                    Toast.makeText(getApplicationContext(),
+                            "Dude! What kind of Person doesn't have a name? ",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra(MainActivity.PERSON, buildPersonFromFields());
                 returnIntent.putExtra(MainActivity.PERSON_POSITION, personPosition);
