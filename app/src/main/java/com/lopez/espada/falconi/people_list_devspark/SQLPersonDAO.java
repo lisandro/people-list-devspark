@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,16 +38,10 @@ public class SQLPersonDAO implements PersonDAO {
 
     @Override
     public Person savePerson(Person person) {
-        ContentValues values = new ContentValues();
-        values.put(PersonDBHelper.COLUMN_NAME, person.getName());
-        values.put(PersonDBHelper.COLUMN_EMAIL, person.getEmail());
-        values.put(PersonDBHelper.COLUMN_PHONE, person.getPhone());
-        values.put(PersonDBHelper.COLUMN_ADDRESS, person.getAddress());
-        values.put(PersonDBHelper.COLUMN_DOB, person.getDob());
+        ContentValues values = personToContentValues(person);
         // Oh my SQLite lord, please save this person from the futility of thy life.
         long insertId = database.insert(PersonDBHelper.TABLE_PERSON, null,
                 values);
-
         Cursor cursor = database.query(PersonDBHelper.TABLE_PERSON,
                 allColumns, PersonDBHelper.COLUMN_ID + " = " + insertId, null,
                 null, null, null);
@@ -56,6 +49,14 @@ public class SQLPersonDAO implements PersonDAO {
         Person newPerson = cursorToPerson(cursor);
         cursor.close();
         return newPerson;
+    }
+
+
+    @Override
+    public void updatePerson(Person person) {
+        int id = person.getId();
+        ContentValues values = personToContentValues(person);
+        int as = database.update(PersonDBHelper.TABLE_PERSON, values, PersonDBHelper.COLUMN_ID + " = " + id, null);
     }
 
     @Override
@@ -90,5 +91,15 @@ public class SQLPersonDAO implements PersonDAO {
         person.setPhone(cursor.getString(cursor.getColumnIndex(PersonDBHelper.COLUMN_PHONE)));
         person.setDob(cursor.getString(cursor.getColumnIndex(PersonDBHelper.COLUMN_DOB)));
         return person;
+    }
+
+    private ContentValues personToContentValues(Person person) {
+        ContentValues values = new ContentValues();
+        values.put(PersonDBHelper.COLUMN_NAME, person.getName());
+        values.put(PersonDBHelper.COLUMN_EMAIL, person.getEmail());
+        values.put(PersonDBHelper.COLUMN_PHONE, person.getPhone());
+        values.put(PersonDBHelper.COLUMN_ADDRESS, person.getAddress());
+        values.put(PersonDBHelper.COLUMN_DOB, person.getDob());
+        return values;
     }
 }

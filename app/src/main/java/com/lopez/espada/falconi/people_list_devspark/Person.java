@@ -7,7 +7,6 @@ import android.os.Parcelable;
  * Created by gabriel on 30/07/15.
  */
 public class Person implements Parcelable {
-
     private int id;
     private String name;
     private String phone;
@@ -16,6 +15,7 @@ public class Person implements Parcelable {
     private String dob;
 
     public Person(Parcel pc){
+        id = pc.readInt();
         name = pc.readString();
         phone = pc.readString();
         email = pc.readString();
@@ -32,6 +32,7 @@ public class Person implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
         dest.writeString(name);
         dest.writeString(phone);
         dest.writeString(email);

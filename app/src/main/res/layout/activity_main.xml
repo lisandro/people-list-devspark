@@ -1,9 +1,16 @@
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context=".MainActivity">
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/tool_bar"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/toolbar" />
 
         <ListView
             android:layout_width="wrap_content"
@@ -13,4 +20,4 @@
             android:choiceMode="singleChoice"
             tools:listitem="@layout/person" />
 
-    </RelativeLayout>
+    </LinearLayout>

@@ -9,4 +9,6 @@ public interface PersonDAO {
     Person savePerson(Person person);
 
     List<Person> getAllPersons();
+
+    void updatePerson(Person person);
 }

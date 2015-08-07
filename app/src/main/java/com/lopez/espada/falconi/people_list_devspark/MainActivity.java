@@ -105,10 +105,11 @@ public class MainActivity extends AppCompatActivity {//ActionBarActivity
             int position = intent.getIntExtra(PERSON_POSITION, -1);
             if (position != -1) {
                 personList.set(position,person);
+                dao.updatePerson(person);
             } else {
                 personList.add(person);
+                dao.savePerson(person);
             }
-            dao.savePerson(person);
             personListAdapter.notifyDataSetChanged();
         }
         super.onActivityResult(requestCode, resultCode, intent);
