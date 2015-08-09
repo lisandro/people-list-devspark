@@ -2,6 +2,8 @@ package com.lopez.espada.falconi.people_list_devspark;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.net.Uri;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -94,5 +96,14 @@ public class NewEditPerson extends AppCompatActivity {
         person.setPhone(personPhoneField.getText().toString());
         person.setDob(personDoBField.getText().toString());
         return person;
+    }
+
+    public void callContact(View view) {
+        String phone = personPhoneField.getText().toString();
+        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+        startActivity(intent);
+    }
+
+    public void sendSMS(View view) {
     }
 }

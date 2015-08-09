@@ -72,6 +72,20 @@
             android:layout_height="wrap_content"
             android:text="@string/cancel_text"
             android:id="@+id/cancel_button" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="callContact"
+            android:text="@string/call_text"
+            android:id="@+id/call_button" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="sendSMS"
+            android:text="@string/sms_text"
+            android:id="@+id/sms_button" />
     </LinearLayout>
 
 </LinearLayout>
