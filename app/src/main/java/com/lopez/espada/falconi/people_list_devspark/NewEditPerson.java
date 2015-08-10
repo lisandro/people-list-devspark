@@ -93,6 +93,9 @@ public class NewEditPerson extends AppCompatActivity {
         person.setEmail(personEmailField.getText().toString());
         person.setPhone(personPhoneField.getText().toString());
         person.setDob(personDoBField.getText().toString());
+        if (this.person != null) {
+            person.setId(this.person.getId());
+        }
         return person;
     }
 }
