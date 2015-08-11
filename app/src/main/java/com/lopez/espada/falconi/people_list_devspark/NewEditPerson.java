@@ -3,7 +3,6 @@ package com.lopez.espada.falconi.people_list_devspark;
 import android.content.Intent;
 import android.os.Bundle;
 import android.net.Uri;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -105,5 +104,20 @@ public class NewEditPerson extends AppCompatActivity {
     }
 
     public void sendSMS(View view) {
+        String phone = personPhoneField.getText().toString();
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", phone, null));
+        startActivity(intent);
+    }
+
+    public void sendEmail(View view) {
+        String email = personEmailField.getText().toString();
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("message/rfc822");
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{email});
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
+        intent.putExtra(Intent.EXTRA_TEXT, "Body");
+        try {
+            startActivity(Intent.createChooser(intent, "Send mail..."));
+        } catch (android.content.ActivityNotFoundException ex) {}
     }
 }

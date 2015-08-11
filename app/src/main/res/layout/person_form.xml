@@ -4,7 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.lopez.espada.falconi.people_list_devspark.NewEditPerson">
+    tools:context="com.lopez.espada.falconi.people_list_devspark.NewEditPerson"
+    android:weightSum="1">
 
     <include
         android:id="@+id/toolbar"
@@ -19,23 +20,59 @@
         android:layout_gravity="center_horizontal"
         android:hint="@string/name_hint" />
 
-    <EditText
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="phone"
-        android:ems="10"
-        android:id="@+id/person_phone"
-        android:layout_gravity="center_horizontal"
-        android:hint="@string/phone_hint" />
+        android:layout_height="wrap_content">
 
-    <EditText
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:ems="10"
+            android:id="@+id/person_phone"
+            android:hint="@string/phone_hint"
+            android:layout_weight="81.54"
+            android:layout_gravity="center_vertical" />
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="35dp"
+            android:id="@+id/imageButton"
+            android:onClick="callContact"
+            android:src="@android:drawable/sym_action_call" />
+
+        <ImageButton
+            android:layout_width="42dp"
+            android:layout_height="35dp"
+            android:onClick="sendSMS"
+            android:src="@android:drawable/ic_dialog_email"
+            android:id="@+id/imageButton2"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:ems="10"
-        android:id="@+id/person_email"
-        android:layout_gravity="center_horizontal"
-        android:hint="@string/email_hint" />
+        android:layout_gravity="center_horizontal">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:ems="10"
+            android:id="@+id/person_email"
+            android:hint="@string/email_hint"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:layout_width="42dp"
+            android:layout_height="35dp"
+            android:onClick="sendEmail"
+            android:src="@android:drawable/ic_dialog_email"
+            android:id="@+id/imageButton3" />
+    </LinearLayout>
 
     <EditText
         android:layout_width="match_parent"
@@ -56,8 +93,7 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        android:layout_height="wrap_content">
 
         <Button
             style="?android:attr/buttonStyleSmall"
@@ -72,20 +108,6 @@
             android:layout_height="wrap_content"
             android:text="@string/cancel_text"
             android:id="@+id/cancel_button" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="callContact"
-            android:text="@string/call_text"
-            android:id="@+id/call_button" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="sendSMS"
-            android:text="@string/sms_text"
-            android:id="@+id/sms_button" />
     </LinearLayout>
 
 </LinearLayout>
