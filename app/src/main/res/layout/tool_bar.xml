@@ -7,4 +7,22 @@
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     android:background="@color/PrimaryColor">
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|right"
+        android:orientation="horizontal" >
+
+        <EditText android:id="@+id/edit_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/action_search" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/action_add"
+            android:id="@+id/add_person"
+            android:onClick="@string/action_add" />
+
+    </LinearLayout>
 </android.support.v7.widget.Toolbar>

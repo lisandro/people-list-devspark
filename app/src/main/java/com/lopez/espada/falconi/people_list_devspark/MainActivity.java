@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -71,9 +72,17 @@ public class MainActivity extends AppCompatActivity {//ActionBarActivity
                 startActivityForResult(intent, NEW_EDIT_PERSON);
             }
         });
+        Button addPersonButton = (Button) findViewById(R.id.add_person);
+        addPersonButton.setOnClickListener(new AdapterView.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, NewEditPerson.class);
+                startActivityForResult(intent, NEW_EDIT_PERSON);
+            }
+        });
 
     }
-
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -96,7 +105,7 @@ public class MainActivity extends AppCompatActivity {//ActionBarActivity
         }
         return super.onOptionsItemSelected(item);
     }
-
+*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         Log.d("MainActivity", "onActivityResult " + requestCode + " " + resultCode);
