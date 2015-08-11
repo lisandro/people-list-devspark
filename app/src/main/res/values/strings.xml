@@ -12,6 +12,6 @@
     <string name="save_text">Save</string>
     <string name="cancel_text">Cancel</string>
     <string name="pick_image_text">Choose profile picture</string>
-    <string name="grid_layout_manager">Grid Layout</string>
-    <string name="linear_layout_manager">Linear Layout</string>
+    <string name="grid_layout_manager">Grid</string>
+    <string name="linear_layout_manager">List</string>
 </resources>

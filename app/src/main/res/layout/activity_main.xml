@@ -32,12 +32,28 @@
                 android:text="@string/grid_layout_manager" />
         </RadioGroup>
 
-        <ListView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/person_list_view"
-            android:clickable="true"
-            android:choiceMode="singleChoice"
-            tools:listitem="@layout/person" />
+
+        <ViewSwitcher
+            android:id="@+id/viewswitcher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <ListView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/person_list_view"
+                android:clickable="true"
+                android:choiceMode="singleChoice"
+                tools:listitem="@layout/person" />
+
+            <GridView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/person_grid_view"
+                android:clickable="true"
+                android:choiceMode="singleChoice"
+                tools:listitem="@layout/person" />
+
+        </ViewSwitcher>
 
     </LinearLayout>
