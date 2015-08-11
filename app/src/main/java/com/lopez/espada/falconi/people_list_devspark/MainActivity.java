@@ -4,18 +4,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.ViewSwitcher;
 
-import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -25,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int NEW_EDIT_PERSON = 1;
 
-    private ArrayList<Person> personList;
+    private List<Person> personList;
     private PersonListAdapter personListAdapter;
     private ListView personListView;
     private GridView personGridView;
@@ -42,10 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
         bindViews();
 
-        personList = new ArrayList<Person>();
-        for(Person p : dao.getAllPersons()) {
-            personList.add(p);
-        }
+        personList = dao.getAllPersons();
         personListAdapter = new PersonListAdapter(this, personList);
         personListView.setAdapter(personListAdapter);
         personGridView.setAdapter(personListAdapter);
@@ -74,6 +73,20 @@ public class MainActivity extends AppCompatActivity {
 
         personListView.setOnItemClickListener(getPersonClickListener());
         personGridView.setOnItemClickListener(getPersonClickListener());
+
+        EditText searchPersonButton = (EditText) findViewById(R.id.search_person);
+        searchPersonButton.addTextChangedListener(new TextWatcher() {
+            //TODO sanitize input (linebreaks)
+            @Override
+            public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
+                MainActivity.this.personListAdapter.getFilter().filter(cs);
+            }
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) { }
+
+            @Override
+            public void afterTextChanged(Editable arg0) {}
+        });
 
         Button addPersonButton = (Button) findViewById(R.id.add_person);
         addPersonButton.setOnClickListener(new AdapterView.OnClickListener() {
@@ -106,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
         return new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("MainActivity", "click on list");
                 Intent intent = new Intent(MainActivity.this, NewEditPerson.class);
                 intent.putExtra(PERSON, personList.get(position));
                 intent.putExtra(PERSON_POSITION, position);
@@ -117,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        Log.d("MainActivity", "onActivityResult " + requestCode + " " + resultCode);
         if (resultCode == RESULT_OK && requestCode == NEW_EDIT_PERSON) {
             Person person = intent.getParcelableExtra(PERSON);
             int position = intent.getIntExtra(PERSON_POSITION, -1);

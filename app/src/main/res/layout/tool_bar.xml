@@ -13,7 +13,7 @@
         android:layout_gravity="center|right"
         android:orientation="horizontal" >
 
-        <EditText android:id="@+id/edit_message"
+        <EditText android:id="@+id/search_person"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="@string/action_search" />

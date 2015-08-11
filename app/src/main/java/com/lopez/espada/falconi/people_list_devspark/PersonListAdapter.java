@@ -2,18 +2,22 @@ package com.lopez.espada.falconi.people_list_devspark;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by gabriel on 30/07/15.
  */
-public class PersonListAdapter extends BaseAdapter {
+public class PersonListAdapter extends BaseAdapter implements Filterable {
 
     private final Context context;
 
@@ -21,10 +25,12 @@ public class PersonListAdapter extends BaseAdapter {
         TextView personText;
     }
 
-    private final List<Person> personList;
+    private List<Person> personList;
+    private List<Person> allPersonList;
 
     public PersonListAdapter(Context context, List<Person> personList) {
         this.context = context;
+        this.allPersonList = personList;
         this.personList = personList;
     }
 
@@ -61,5 +67,41 @@ public class PersonListAdapter extends BaseAdapter {
             holder.personText.setText(((Person)getItem(position)).getName());
         }
         return convertView;
+    }
+
+    @Override
+    public Filter getFilter() {
+
+        Filter filter = new Filter() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                personList = (List<Person>) results.values;
+                Log.d("Filter","publishing result");
+                notifyDataSetChanged();
+            }
+
+            @Override
+            protected FilterResults performFiltering(CharSequence search) {
+
+                FilterResults results = new FilterResults();
+                ArrayList<Person> matching = new ArrayList<Person>();
+
+                String matcher = search.toString().toLowerCase();
+                Log.d("Filter","filtering "+allPersonList.size()+" people for "+matcher);
+                for (Person p : allPersonList) {
+                    if (p.getName().toLowerCase().contains(matcher))  {
+                        matching.add(p);
+                    }
+                }
+                Log.d("Filter","got matching "+matching.size());
+                results.count = matching.size();
+                results.values = matching;
+                return results;
+            }
+        };
+
+        return filter;
     }
 }
