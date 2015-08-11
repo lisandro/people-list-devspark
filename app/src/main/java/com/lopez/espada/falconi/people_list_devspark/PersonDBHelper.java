@@ -20,6 +20,7 @@ public class PersonDBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_EMAIL = "email";
     public static final String COLUMN_ADDRESS = "address";
     public static final String COLUMN_DOB = "dob";
+    public static final String COLUMN_PHOTO = "photo";
 
     private static final String DATABASE_CREATE = "create table "
             + TABLE_PERSON + "(" + COLUMN_ID
@@ -28,8 +29,8 @@ public class PersonDBHelper extends SQLiteOpenHelper {
             + COLUMN_PHONE + " text,"
             + COLUMN_EMAIL + " text,"
             + COLUMN_ADDRESS + " text,"
-            + COLUMN_DOB + " text"
-            //TODO profile pic
+            + COLUMN_DOB + " text,"
+            + COLUMN_PHOTO + " blob"
             +");";
 
     public PersonDBHelper(Context context) {

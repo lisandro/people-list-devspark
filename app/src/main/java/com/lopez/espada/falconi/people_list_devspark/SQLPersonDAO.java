@@ -21,7 +21,8 @@ public class SQLPersonDAO implements PersonDAO {
             PersonDBHelper.COLUMN_EMAIL,
             PersonDBHelper.COLUMN_PHONE,
             PersonDBHelper.COLUMN_ADDRESS,
-            PersonDBHelper.COLUMN_DOB
+            PersonDBHelper.COLUMN_DOB,
+            PersonDBHelper.COLUMN_PHOTO
     };
 
     public SQLPersonDAO(Context context) {
@@ -90,6 +91,8 @@ public class SQLPersonDAO implements PersonDAO {
         person.setEmail(cursor.getString(cursor.getColumnIndex(PersonDBHelper.COLUMN_EMAIL)));
         person.setPhone(cursor.getString(cursor.getColumnIndex(PersonDBHelper.COLUMN_PHONE)));
         person.setDob(cursor.getString(cursor.getColumnIndex(PersonDBHelper.COLUMN_DOB)));
+        person.setPhoto(cursor.getBlob(cursor.getColumnIndex(PersonDBHelper.COLUMN_PHOTO)));
+
         return person;
     }
 
@@ -100,6 +103,8 @@ public class SQLPersonDAO implements PersonDAO {
         values.put(PersonDBHelper.COLUMN_PHONE, person.getPhone());
         values.put(PersonDBHelper.COLUMN_ADDRESS, person.getAddress());
         values.put(PersonDBHelper.COLUMN_DOB, person.getDob());
+        values.put(PersonDBHelper.COLUMN_PHOTO, person.getPhoto());
+
         return values;
     }
 }
