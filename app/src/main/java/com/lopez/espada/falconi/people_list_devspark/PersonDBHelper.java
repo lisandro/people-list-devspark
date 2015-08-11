@@ -21,7 +21,6 @@ public class PersonDBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ADDRESS = "address";
     public static final String COLUMN_DOB = "dob";
 
-    // Database creation sql statement
     private static final String DATABASE_CREATE = "create table "
             + TABLE_PERSON + "(" + COLUMN_ID
             + " integer primary key autoincrement, "

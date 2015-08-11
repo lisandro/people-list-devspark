@@ -56,7 +56,7 @@ public class SQLPersonDAO implements PersonDAO {
     public void updatePerson(Person person) {
         int id = person.getId();
         ContentValues values = personToContentValues(person);
-        int as = database.update(PersonDBHelper.TABLE_PERSON, values, PersonDBHelper.COLUMN_ID + " = " + id, null);
+        int as = database.update(PersonDBHelper.TABLE_PERSON, values, PersonDBHelper.COLUMN_ID + "=" + id, null);
     }
 
     @Override
