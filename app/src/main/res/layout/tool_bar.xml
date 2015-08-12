@@ -16,6 +16,7 @@
         <EditText android:id="@+id/search_person"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:singleLine="true"
             android:hint="@string/action_search" />
         <Button
             android:layout_width="wrap_content"
