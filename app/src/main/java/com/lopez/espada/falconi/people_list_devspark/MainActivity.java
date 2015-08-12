@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private GridView personGridView;
     private SQLPersonDAO dao; // I don't think this should be on the main thread D=
     private ViewSwitcher viewSwitcher;
+    private EditText searchPersonButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         personListView.setOnItemClickListener(getPersonClickListener());
         personGridView.setOnItemClickListener(getPersonClickListener());
 
-        EditText searchPersonButton = (EditText) findViewById(R.id.search_person);
+        searchPersonButton = (EditText) findViewById(R.id.search_person);
         searchPersonButton.addTextChangedListener(new TextWatcher() {
             //TODO sanitize input (linebreaks)
             @Override
@@ -139,7 +140,9 @@ public class MainActivity extends AppCompatActivity {
                 personList.add(person);
                 dao.savePerson(person);
             }
-            personListAdapter.notifyDataSetChanged();
+            searchPersonButton.setText(searchPersonButton.getText());
+            // kinda ugly, trigger text changed so it refilters the list
+         //   personListAdapter.notifyDataSetChanged();
         }
         super.onActivityResult(requestCode, resultCode, intent);
     }
