@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, NewEditPerson.class);
-                intent.putExtra(PERSON, personList.get(position));
+                intent.putExtra(PERSON, (Person)personListAdapter.getItem(position));
                 intent.putExtra(PERSON_POSITION, position);
                 startActivityForResult(intent, NEW_EDIT_PERSON);
             }
@@ -134,7 +134,8 @@ public class MainActivity extends AppCompatActivity {
             Person person = intent.getParcelableExtra(PERSON);
             int position = intent.getIntExtra(PERSON_POSITION, -1);
             if (position != -1) {
-                personList.set(position,person);
+                Person oldPerson = (Person)personListAdapter.getItem(position);
+                personList.set(personList.indexOf(oldPerson),person);
                 dao.updatePerson(person);
             } else {
                 personList.add(person);
