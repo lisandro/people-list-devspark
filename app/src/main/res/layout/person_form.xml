@@ -109,8 +109,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="@string/dob_hint"
-                android:inputType="date" />
+                android:hint="@string/dob_hint" />
 
             <LinearLayout
                 android:layout_width="match_parent"

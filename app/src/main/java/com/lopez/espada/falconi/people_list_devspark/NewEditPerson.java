@@ -1,6 +1,7 @@
 package com.lopez.espada.falconi.people_list_devspark;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,12 +11,15 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -27,8 +31,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Lisandro Falconi on 28/07/15.
@@ -47,18 +56,8 @@ public class NewEditPerson extends AppCompatActivity {
     private ImageView personPhotoView;
     private Person person;
     private int personPosition;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.person_form);
-
-        Intent i = getIntent();
-        person = i.getParcelableExtra(MainActivity.PERSON);
-        personPosition = i.getIntExtra(MainActivity.PERSON_POSITION, -1);
-
-        bindViews();
-    }
+    private DatePickerDialog dateOfBirthPickerDialog;
+    private SimpleDateFormat dateFormatter;
 
     /**
      * Convert from bitmap to byte array
@@ -80,6 +79,18 @@ public class NewEditPerson extends AppCompatActivity {
      */
     public static Bitmap getImage(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.person_form);
+
+        Intent i = getIntent();
+        person = i.getParcelableExtra(MainActivity.PERSON);
+        personPosition = i.getIntExtra(MainActivity.PERSON_POSITION, -1);
+
+        bindViews();
     }
 
     public void callContact(View view) {
@@ -109,15 +120,9 @@ public class NewEditPerson extends AppCompatActivity {
             }
         });
 
-        personPhotoView = (ImageView) findViewById(R.id.imageView);
-        imagePickerButton = (Button) findViewById(R.id.imagePickerButton);
-        personNameField = (EditText) findViewById(R.id.person_name);
-        personPhoneField = (EditText) findViewById(R.id.person_phone);
-        personEmailField = (EditText) findViewById(R.id.person_email);
-        personAddressField = (EditText) findViewById(R.id.person_address);
-        personDoBField = (EditText) findViewById(R.id.person_dob);
-        savePersonButton = (Button) findViewById(R.id.save_button);
-        cancelPersonButton = (Button) findViewById(R.id.cancel_button);
+        findViews();
+        setUpDobPicker();
+
         personPhotoView.setImageResource(getResources().getIdentifier(defaultPicPath, null, null));
 
         if (person != null) {
@@ -165,6 +170,52 @@ public class NewEditPerson extends AppCompatActivity {
         });
     }
 
+    private void setUpDobPicker() {
+        dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
+        Calendar newCalendar = Calendar.getInstance();
+
+        dateOfBirthPickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, monthOfYear, dayOfMonth);
+
+                personDoBField.setText(dateFormatter.format(newDate.getTime()));
+            }
+
+        },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+        //Preventing birth in the future
+        dateOfBirthPickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
+
+        personDoBField.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar personCurrentDob = Calendar.getInstance();
+                String dob_var=(personDoBField.getText().toString());
+                try {
+                    Date dateObject = dateFormatter.parse(dob_var);
+                    personCurrentDob.setTime(dateObject);
+                } catch (ParseException ignored) {}
+
+                dateOfBirthPickerDialog.updateDate(personCurrentDob.get(Calendar.YEAR), personCurrentDob.get(Calendar.MONTH), personCurrentDob.get(Calendar.DAY_OF_MONTH));
+
+                dateOfBirthPickerDialog.show();
+            }
+        });
+    }
+
+    private void findViews() {
+        personPhotoView = (ImageView) findViewById(R.id.imageView);
+        imagePickerButton = (Button) findViewById(R.id.imagePickerButton);
+        personNameField = (EditText) findViewById(R.id.person_name);
+        personPhoneField = (EditText) findViewById(R.id.person_phone);
+        personEmailField = (EditText) findViewById(R.id.person_email);
+        personAddressField = (EditText) findViewById(R.id.person_address);
+        personDoBField = (EditText) findViewById(R.id.person_dob);
+        savePersonButton = (Button) findViewById(R.id.save_button);
+        cancelPersonButton = (Button) findViewById(R.id.cancel_button);
+    }
+
     private Person buildPersonFromFields() {
         Person person = new Person();
         person.setName(personNameField.getText().toString());
@@ -201,9 +252,18 @@ public class NewEditPerson extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             Uri imageUri = getPickImageResultUri(data);
+            // Set the image captured in ImageView
             personPhotoView.setImageURI(imageUri);
             Intent imageIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            // Set the image file name
             imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            // Image captured and saved to fileUri specified in the Intent
+            Toast.makeText(this, "Image saved to:\n" +
+                    imageUri, Toast.LENGTH_LONG).show();
+        } else if (resultCode == RESULT_CANCELED) {
+            // User cancelled the image capture
+        } else {
+            // Image capture failed, advise user
         }
     }
 
@@ -211,11 +271,11 @@ public class NewEditPerson extends AppCompatActivity {
      * Get URI to image received from capture by camera.
      */
     private Uri getCaptureImageOutputUri() {
-        Uri outputFileUri = null;
-        File getImage = getExternalCacheDir();
-        if (getImage != null) {
-            outputFileUri = Uri.fromFile(new File(getImage.getPath(), "pickProfileImage.jpeg"));
-        }
+        Uri outputFileUri;
+        File getImage = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        String pickProfileImage = String.valueOf(person.getId());
+        String basePath = getImage.getPath()+ "/Devspark";
+        outputFileUri = Uri.fromFile(new File(basePath, pickProfileImage + ".jpeg"));
 
         return outputFileUri;
     }
