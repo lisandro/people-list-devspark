@@ -91,7 +91,7 @@ public class SQLPersonDAO implements PersonDAO {
         person.setEmail(cursor.getString(cursor.getColumnIndex(PersonDBHelper.COLUMN_EMAIL)));
         person.setPhone(cursor.getString(cursor.getColumnIndex(PersonDBHelper.COLUMN_PHONE)));
         person.setDob(cursor.getString(cursor.getColumnIndex(PersonDBHelper.COLUMN_DOB)));
-        person.setPhoto(cursor.getBlob(cursor.getColumnIndex(PersonDBHelper.COLUMN_PHOTO)));
+        person.setPhoto(cursor.getString(cursor.getColumnIndex(PersonDBHelper.COLUMN_PHOTO)));
 
         return person;
     }

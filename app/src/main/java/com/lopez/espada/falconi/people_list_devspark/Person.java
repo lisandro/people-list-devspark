@@ -13,7 +13,7 @@ public class Person implements Parcelable {
     private String email;
     private String address;
     private String dob;
-    private byte[] photo;
+    private String photo;
 
     public Person(Parcel pc){
         id = pc.readInt();
@@ -22,8 +22,7 @@ public class Person implements Parcelable {
         email = pc.readString();
         address = pc.readString();
         dob = pc.readString();
-        photo = new byte[pc.readInt()];
-        pc.readByteArray(photo);
+        photo = pc.readString();
     }
 
     public Person(){}
@@ -41,8 +40,7 @@ public class Person implements Parcelable {
         dest.writeString(email);
         dest.writeString(address);
         dest.writeString(dob);
-        dest.writeInt(photo.length);
-        dest.writeByteArray(photo);
+        dest.writeString(photo);
     }
 
     public static final Parcelable.Creator<Person> CREATOR = new Parcelable.Creator<Person>() {
@@ -102,11 +100,11 @@ public class Person implements Parcelable {
         this.dob = dob;
     }
 
-    public byte[] getPhoto() {
+    public String getPhoto() {
         return photo;
     }
 
-    public void setPhoto(byte[] photo) {
+    public void setPhoto(String photo) {
         this.photo = photo;
     }
 }

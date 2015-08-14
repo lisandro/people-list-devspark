@@ -30,7 +30,7 @@ public class PersonDBHelper extends SQLiteOpenHelper {
             + COLUMN_EMAIL + " text,"
             + COLUMN_ADDRESS + " text,"
             + COLUMN_DOB + " text,"
-            + COLUMN_PHOTO + " blob"
+            + COLUMN_PHOTO + " text"
             +");";
 
     public PersonDBHelper(Context context) {

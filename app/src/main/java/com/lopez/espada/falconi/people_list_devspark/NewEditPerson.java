@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,6 +16,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -25,12 +25,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ import java.util.Locale;
  *
  */
 public class NewEditPerson extends AppCompatActivity {
-    private Toolbar toolbar;
+    private static final String TAG = "ProfilePictureBitmap";
     private Button imagePickerButton;
     private Button savePersonButton;
     private Button cancelPersonButton;
@@ -58,6 +58,7 @@ public class NewEditPerson extends AppCompatActivity {
     private int personPosition;
     private DatePickerDialog dateOfBirthPickerDialog;
     private SimpleDateFormat dateFormatter;
+    private Uri imageUri = Uri.parse("com.lopez.espada.falconi.people_list_devspark:drawable/person_default_page"); //Default contact image
 
     /**
      * Convert from bitmap to byte array
@@ -79,6 +80,29 @@ public class NewEditPerson extends AppCompatActivity {
      */
     public static Bitmap getImage(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
+    }
+
+    /**
+     * Get Bitmap from an URL
+     * NOT USED
+     * @param url
+     * @return
+     */
+    private Bitmap getImageBitmap(String url) {
+        Bitmap bm = null;
+        try {
+            URL aURL = new URL(url);
+            URLConnection conn = aURL.openConnection();
+            conn.connect();
+            InputStream is = conn.getInputStream();
+            BufferedInputStream bis = new BufferedInputStream(is);
+            bm = BitmapFactory.decodeStream(bis);
+            bis.close();
+            is.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Error getting bitmap", e);
+        }
+        return bm;
     }
 
     @Override
@@ -106,10 +130,9 @@ public class NewEditPerson extends AppCompatActivity {
     }
 
     private void bindViews() {
-        String defaultPicPath = "com.lopez.espada.falconi.people_list_devspark:drawable/person_default_page";
 
         // Initializing Toolbar and setting it as the actionbar
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_home_black));
@@ -123,7 +146,7 @@ public class NewEditPerson extends AppCompatActivity {
         findViews();
         setUpDobPicker();
 
-        personPhotoView.setImageResource(getResources().getIdentifier(defaultPicPath, null, null));
+        personPhotoView.setImageResource(getResources().getIdentifier(String.valueOf(imageUri), null, null));
 
         if (person != null) {
             personNameField.setText(person.getName());
@@ -131,7 +154,7 @@ public class NewEditPerson extends AppCompatActivity {
             personEmailField.setText(person.getEmail());
             personAddressField.setText(person.getAddress());
             personDoBField.setText(person.getDob());
-            personPhotoView.setImageBitmap(getImage(person.getPhoto()));
+            personPhotoView.setImageURI(Uri.parse(person.getPhoto()));
         }
         cancelPersonButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,9 +210,9 @@ public class NewEditPerson extends AppCompatActivity {
         //Preventing birth in the future
         dateOfBirthPickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
 
-        personDoBField.setOnClickListener(new View.OnClickListener() {
+        personDoBField.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
                 Calendar personCurrentDob = Calendar.getInstance();
                 String dob_var=(personDoBField.getText().toString());
                 try {
@@ -197,9 +220,11 @@ public class NewEditPerson extends AppCompatActivity {
                     personCurrentDob.setTime(dateObject);
                 } catch (ParseException ignored) {}
 
+                //Set current date of birth of contact
                 dateOfBirthPickerDialog.updateDate(personCurrentDob.get(Calendar.YEAR), personCurrentDob.get(Calendar.MONTH), personCurrentDob.get(Calendar.DAY_OF_MONTH));
 
                 dateOfBirthPickerDialog.show();
+                return true;
             }
         });
     }
@@ -223,10 +248,7 @@ public class NewEditPerson extends AppCompatActivity {
         person.setEmail(personEmailField.getText().toString());
         person.setPhone(personPhoneField.getText().toString());
         person.setDob(personDoBField.getText().toString());
-        if (personPhotoView.getDrawable() != null) {
-            Bitmap bitmap = ((BitmapDrawable) personPhotoView.getDrawable()).getBitmap();
-            person.setPhoto(getBytes(bitmap));
-        }
+        person.setPhoto(imageUri.toString());
 
         if (this.person != null) {
             person.setId(this.person.getId());
@@ -251,7 +273,7 @@ public class NewEditPerson extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            Uri imageUri = getPickImageResultUri(data);
+            imageUri = getPickImageResultUri(data);
             // Set the image captured in ImageView
             personPhotoView.setImageURI(imageUri);
             Intent imageIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -262,6 +284,7 @@ public class NewEditPerson extends AppCompatActivity {
                     imageUri, Toast.LENGTH_LONG).show();
         } else if (resultCode == RESULT_CANCELED) {
             // User cancelled the image capture
+            Toast.makeText(this, "Operation cancelled", Toast.LENGTH_LONG).show();
         } else {
             // Image capture failed, advise user
         }
@@ -286,7 +309,7 @@ public class NewEditPerson extends AppCompatActivity {
      *
      * @param data the returned data of the activity result
      */
-    public Uri getPickImageResultUri(Intent data) {
+    private Uri getPickImageResultUri(Intent data) {
         boolean isCamera = true;
         if (data != null) {
             String action = data.getAction();
@@ -296,43 +319,11 @@ public class NewEditPerson extends AppCompatActivity {
     }
 
     /**
-     * Save the selected image as profile picture
-     * TO USE in the future
-     * @param sourceUri
-     */
-    private void saveFile(Uri sourceUri) {
-        String sourceFilename = sourceUri.getPath();
-        String destinationFilename = android.os.Environment.getExternalStorageDirectory().getPath() + File.separatorChar + "profilePic.jpeg";
-
-        BufferedInputStream bis = null;
-        BufferedOutputStream bos = null;
-
-        try {
-            bis = new BufferedInputStream(new FileInputStream(sourceFilename));
-            bos = new BufferedOutputStream(new FileOutputStream(destinationFilename, false));
-            byte[] buf = new byte[1024];
-            bis.read(buf);
-            do {
-                bos.write(buf);
-            } while (bis.read(buf) != -1);
-        } catch (IOException ignored) {
-
-        } finally {
-            try {
-                if (bis != null) bis.close();
-                if (bos != null) bos.close();
-            } catch (IOException ignored) {
-
-            }
-        }
-    }
-
-    /**
      * Create a chooser intent to select the source to get image from.<br/>
      * The source can be camera's (ACTION_IMAGE_CAPTURE) or gallery's (ACTION_GET_CONTENT).<br/>
      * All possible sources are added to the intent chooser.
      */
-    public Intent getPickImageChooserIntent() {
+    private Intent getPickImageChooserIntent() {
 
         // Determine Uri of camera image to save.
         Uri outputFileUri = getCaptureImageOutputUri();
